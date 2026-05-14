@@ -150,4 +150,8 @@ Planned CI/CD workflow:
 
 ## License
 
+<<<<<<< HEAD
 MIT
+=======
+MIT
+>>>>>>> 714b265 (added readme)
