@@ -34,7 +34,7 @@ The platform focuses on:
 
 ### Developer Experience
 - Monorepo architecture
-- CI/CD ready
+- CI/CD ready 
 - Scalable frontend/backend separation
 - API-first design
 - Modular system architecture
