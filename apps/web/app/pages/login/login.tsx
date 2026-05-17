@@ -1,17 +1,13 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 
-import type { Route } from "../+types/login";
 import { useFormInputs, useLocalStorage } from "../../hooks";
 import {
-  loginStart,
   loginSucceeded,
-  loginFailed,
-  clearError,
   useAppDispatch,
   useAppSelector,
-  selectIsLoading,
   selectAuthError,
+  useLoginMutation,
   type AuthSession,
 } from "../../store";
 
@@ -60,12 +56,12 @@ function buildWorkspaceName(email: string) {
   return `${workspace.charAt(0).toUpperCase()}${workspace.slice(1)} Workspace`;
 }
 
-export function meta({}: Route.MetaArgs) {
+export function meta() {
   return [
-    { title: "Login | TaskFlow" },
+    { title: "Login | LotusFlow" },
     {
       name: "description",
-      content: "Sign in to access your TaskFlow workspace.",
+      content: "Sign in to access your LotusFlow workspace.",
     },
   ];
 }
@@ -73,8 +69,8 @@ export function meta({}: Route.MetaArgs) {
 export default function LoginPage() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const isLoading = useAppSelector(selectIsLoading);
   const authError = useAppSelector(selectAuthError);
+  const [login, { isLoading, error: apiError }] = useLoginMutation();
   const { values, handleChange, reset } = useFormInputs(initialValues);
   const [, setSession] = useLocalStorage<AuthSession | null>(
     STORAGE_SESSION_KEY,
@@ -85,10 +81,6 @@ export default function LoginPage() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     handleChange(e);
-    // Clear auth errors when user starts typing
-    if (authError) {
-      dispatch(clearError());
-    }
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -101,13 +93,11 @@ export default function LoginPage() {
       return;
     }
 
-    dispatch(loginStart());
-
     try {
-      // Simulate API call
-      await new Promise((resolve) => {
-        window.setTimeout(resolve, 900);
-      });
+      const result = await login({
+        email: values.email.trim().toLowerCase(),
+        password: values.password,
+      }).unwrap();
 
       const normalizedEmail = values.email.trim().toLowerCase();
       const nextWorkspace = buildWorkspaceName(normalizedEmail);
@@ -123,13 +113,11 @@ export default function LoginPage() {
       reset(initialValues);
       navigate("/");
     } catch (error) {
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : "We couldn't sign you in. Please try again.";
-      dispatch(loginFailed(errorMessage));
+      // RTK Query error is already set in apiError
     }
   };
+
+  const displayError = apiError ? (apiError as any)?.data?.message || "We couldn't sign you in. Please try again." : authError;
 
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_top,_#eff6ff,_#ffffff_45%,_#f8fafc_100%)] px-4 py-10 text-slate-950">
@@ -138,7 +126,7 @@ export default function LoginPage() {
           <div className="hidden bg-slate-950 px-10 py-12 text-white lg:flex lg:flex-col lg:justify-between">
             <div className="space-y-6">
               <div className="inline-flex rounded-full border border-white/15 bg-white/10 px-4 py-1 text-sm tracking-[0.22em] uppercase">
-                TaskFlow
+                LotusFlow
               </div>
               <div className="space-y-4">
                 <h1 className="max-w-md text-4xl font-semibold leading-tight">
@@ -171,7 +159,7 @@ export default function LoginPage() {
             <div className="mx-auto flex max-w-md flex-col justify-center">
               <div className="mb-8 space-y-3">
                 <div className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-700 lg:hidden">
-                  TaskFlow
+                  LotusFlow
                 </div>
                 <h2 className="text-3xl font-semibold tracking-tight text-slate-950">
                   Sign in to your workspace
@@ -246,9 +234,9 @@ export default function LoginPage() {
                   Keep me signed in on this device
                 </label>
 
-                {authError ? (
+                {displayError ? (
                   <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-                    {authError}
+                    {displayError}
                   </div>
                 ) : null}
 

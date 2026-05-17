@@ -1,89 +1,352 @@
-import logoDark from "./logo-dark.svg";
-import logoLight from "./logo-light.svg";
+import {
+  closestCorners,
+  DndContext,
+  type DragEndEvent,
+  KeyboardSensor,
+  PointerSensor,
+  useDroppable,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { MoreHorizontal, Search } from 'lucide-react';
+import { useState } from 'react';
+import TaskSingle from './taskSingle';
+import TaskPopUp from './taskPopUp';
+
+type TaskTag = 'Frontend' | 'Backend' | 'DevOps';
+
+type Task = {
+  id: string;
+  title: string;
+  tag: TaskTag;
+  storyPoints?: number;
+};
+
+type BoardColumn = {
+  title: string;
+  count: number;
+  tasks: Task[];
+};
+
+const initialColumns: BoardColumn[] = [
+  {
+    title: 'TO DO',
+    count: 14,
+    tasks: [
+      {
+        id: 'NP-123',
+        title: 'Implement user avatar upload',
+        tag: 'Frontend',
+        storyPoints: 5,
+      },
+      {
+        id: 'NP-124',
+        title: 'Add global search functionality',
+        tag: 'Backend',
+        storyPoints: 3,
+      },
+      {
+        id: 'NP-125',
+        title: 'Create notifications preferences',
+        tag: 'Frontend',
+        storyPoints: 2,
+      },
+    ],
+  },
+  {
+    title: 'IN PROGRESS',
+    count: 5,
+    tasks: [
+      {
+        id: 'NP-126',
+        title: 'Integrate payment gateway',
+        tag: 'Backend',
+        storyPoints: 5,
+      },
+      {
+        id: 'NP-127',
+        title: 'Build admin dashboard analytics',
+        tag: 'Frontend',
+        storyPoints: 3,
+      },
+      {
+        id: 'NP-128',
+        title: 'Add activity log',
+        tag: 'Backend',
+        storyPoints: 2,
+      },
+    ],
+  },
+  {
+    title: 'IN REVIEW',
+    count: 3,
+    tasks: [
+      {
+        id: 'NP-129',
+        title: 'Improve mobile responsiveness',
+        tag: 'Frontend',
+        storyPoints: 5,
+      },
+      {
+        id: 'NP-130',
+        title: 'Optimize database queries',
+        tag: 'Backend',
+        storyPoints: 3,
+      },
+      {
+        id: 'NP-131',
+        title: 'Add unit tests for user service',
+        tag: 'Backend',
+      },
+    ],
+  },
+  {
+    title: 'DONE',
+    count: 8,
+    tasks: [
+      {
+        id: 'NP-120',
+        title: 'Setup CI/CD pipeline',
+        tag: 'DevOps',
+        storyPoints: 5,
+      },
+      {
+        id: 'NP-121',
+        title: 'Design system components',
+        tag: 'Frontend',
+        storyPoints: 3,
+      },
+      {
+        id: 'NP-122',
+        title: 'User authentication flow',
+        tag: 'Backend',
+        storyPoints: 8,
+      },
+    ],
+  },
+];
 
 export function Welcome() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [columns, setColumns] = useState(initialColumns);
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  function findColumnIndexByTaskId(taskId: string) {
+    return columns.findIndex((column) => column.tasks.some((task) => task.id === taskId));
+  }
+
+  function findColumnIndexById(id: string) {
+    const columnIndex = columns.findIndex((column) => column.title === id);
+
+    if (columnIndex !== -1) {
+      return columnIndex;
+    }
+
+    return findColumnIndexByTaskId(id);
+  }
+
+  function handleDragEnd({ active, over }: DragEndEvent) {
+    if (!over || active.id === over.id) {
+      return;
+    }
+
+    const activeId = String(active.id);
+    const overId = String(over.id);
+    const sourceColumnIndex = findColumnIndexByTaskId(activeId);
+    const destinationColumnIndex = findColumnIndexById(overId);
+
+    if (sourceColumnIndex === -1 || destinationColumnIndex === -1) {
+      return;
+    }
+
+    setColumns((currentColumns) => {
+      const nextColumns = currentColumns.map((column) => ({
+        ...column,
+        tasks: [...column.tasks],
+      }));
+      const sourceColumn = nextColumns[sourceColumnIndex];
+      const destinationColumn = nextColumns[destinationColumnIndex];
+      const activeTaskIndex = sourceColumn.tasks.findIndex((task) => task.id === activeId);
+
+      if (activeTaskIndex === -1) {
+        return currentColumns;
+      }
+
+      if (sourceColumnIndex === destinationColumnIndex) {
+        const overTaskIndex = destinationColumn.tasks.findIndex((task) => task.id === overId);
+
+        if (overTaskIndex === -1) {
+          return currentColumns;
+        }
+
+        sourceColumn.tasks = arrayMove(sourceColumn.tasks, activeTaskIndex, overTaskIndex);
+        return nextColumns;
+      }
+
+      const [activeTask] = sourceColumn.tasks.splice(activeTaskIndex, 1);
+      const overTaskIndex = destinationColumn.tasks.findIndex((task) => task.id === overId);
+      const destinationIndex =
+        overTaskIndex === -1 ? destinationColumn.tasks.length : overTaskIndex;
+
+      destinationColumn.tasks.splice(destinationIndex, 0, activeTask);
+
+      return nextColumns;
+    });
+  }
+
   return (
-    <main className="flex items-center justify-center pt-16 pb-4">
-      <div className="flex-1 flex flex-col items-center gap-16 min-h-0">
-        <header className="flex flex-col items-center gap-9">
-          <div className="w-[500px] max-w-[100vw] p-4">
-            <img
-              src={logoLight}
-              alt="React Router"
-              className="block w-full dark:hidden"
-            />
-            <img
-              src={logoDark}
-              alt="React Router"
-              className="hidden w-full dark:block"
+    <>
+      <div className='min-h-screen bg-white p-6'>
+        {/* Header */}
+        <div className='mb-6 flex items-center justify-between'>
+          <div>
+            <p className='text-sm text-slate-400'>Projects / Nova Platform</p>
+
+            <h1 className='mt-1 text-3xl font-bold text-slate-800'>Board</h1>
+          </div>
+
+          <button
+            onClick={() => setIsOpen(true)}
+            className='rounded-lg bg-blue-600 px-5 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-blue-700 hover:cursor-pointer'
+          >
+            Create
+          </button>
+        </div>
+
+        {/* Toolbar */}
+        <div className='mb-6 flex flex-wrap items-center gap-4'>
+          {/* Search */}
+          <div className='flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 shadow-sm'>
+            <Search size={18} className='text-slate-400' />
+
+            <input
+              type='text'
+              placeholder='Search board'
+              className='bg-transparent text-sm outline-none placeholder:text-slate-400'
             />
           </div>
-        </header>
-        <div className="max-w-[300px] w-full space-y-6 px-4">
-          <nav className="rounded-3xl border border-gray-200 p-6 dark:border-gray-700 space-y-4">
-            <p className="leading-6 text-gray-700 dark:text-gray-200 text-center">
-              What&apos;s next?dsdss
-            </p>
-            <ul>
-              {resources.map(({ href, text, icon }) => (
-                <li key={href}>
-                  <a
-                    className="group flex items-center gap-3 self-stretch p-3 leading-normal text-blue-700 hover:underline dark:text-blue-500"
-                    href={href}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    {icon}
-                    {text}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
+
+          {/* Avatars */}
+          <div className='flex -space-x-2'>
+            {[1, 2, 3, 4].map((item) => (
+              <img
+                key={item}
+                src={`https://i.pravatar.cc/40?img=${item + 10}`}
+                alt='avatar'
+                className='h-10 w-10 rounded-full border-2 border-white object-cover'
+              />
+            ))}
+
+            <div className='flex h-10 w-10 items-center justify-center rounded-full border-2 border-white bg-slate-200 text-sm font-medium text-slate-600'>
+              +3
+            </div>
+          </div>
+
+          {/* Filters */}
+          <div className='flex items-center gap-3'>
+            {['Sprint 12', 'Quick filters', 'Labels'].map((item) => (
+              <button
+                key={item}
+                className='rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 shadow-sm hover:bg-slate-50'
+              >
+                {item}
+              </button>
+            ))}
+
+            <button className='rounded-lg border border-slate-200 bg-white p-2 shadow-sm hover:bg-slate-50'>
+              <MoreHorizontal size={18} className='text-slate-500' />
+            </button>
+          </div>
         </div>
+
+        {/* Board */}
+        <DndContext sensors={sensors} collisionDetection={closestCorners} onDragEnd={handleDragEnd}>
+          <div className='grid grid-cols-1 gap-6 lg:grid-cols-4'>
+            {columns.map((column) => (
+              <BoardColumn key={column.title} column={column} />
+            ))}
+          </div>
+        </DndContext>
       </div>
-    </main>
+      {isOpen && (
+        <div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50 rounded-lg'>
+          <TaskPopUp close={() => setIsOpen(false)} />
+        </div>
+      )}
+    </>
   );
 }
 
-const resources = [
-  {
-    href: "https://reactrouter.com/docs",
-    text: "React Router Docs",
-    icon: (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="20"
-        viewBox="0 0 20 20"
-        fill="none"
-        className="stroke-gray-600 group-hover:stroke-current dark:stroke-gray-300"
+function BoardColumn({ column }: { column: BoardColumn }) {
+  const { setNodeRef } = useDroppable({
+    id: column.title,
+  });
+
+  return (
+    <div className='bg-slate-50 p-3'>
+      {/* Column Header */}
+      <div className='mb-4 flex items-center gap-2'>
+        <h2 className='text-sm font-semibold tracking-wide text-slate-500'>{column.title}</h2>
+
+        <span className='text-sm text-slate-400'>{column.tasks.length}</span>
+      </div>
+
+      {/* Cards */}
+      <SortableContext
+        id={column.title}
+        items={column.tasks.map((task) => task.id)}
+        strategy={verticalListSortingStrategy}
       >
-        <path
-          d="M9.99981 10.0751V9.99992M17.4688 17.4688C15.889 19.0485 11.2645 16.9853 7.13958 12.8604C3.01467 8.73546 0.951405 4.11091 2.53116 2.53116C4.11091 0.951405 8.73546 3.01467 12.8604 7.13958C16.9853 11.2645 19.0485 15.889 17.4688 17.4688ZM2.53132 17.4688C0.951566 15.8891 3.01483 11.2645 7.13974 7.13963C11.2647 3.01471 15.8892 0.951453 17.469 2.53121C19.0487 4.11096 16.9854 8.73551 12.8605 12.8604C8.73562 16.9853 4.11107 19.0486 2.53132 17.4688Z"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-        />
-      </svg>
-    ),
-  },
-  {
-    href: "https://rmx.as/discord",
-    text: "Join Discord",
-    icon: (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="20"
-        viewBox="0 0 24 20"
-        fill="none"
-        className="stroke-gray-600 group-hover:stroke-current dark:stroke-gray-300"
-      >
-        <path
-          d="M15.0686 1.25995L14.5477 1.17423L14.2913 1.63578C14.1754 1.84439 14.0545 2.08275 13.9422 2.31963C12.6461 2.16488 11.3406 2.16505 10.0445 2.32014C9.92822 2.08178 9.80478 1.84975 9.67412 1.62413L9.41449 1.17584L8.90333 1.25995C7.33547 1.51794 5.80717 1.99419 4.37748 2.66939L4.19 2.75793L4.07461 2.93019C1.23864 7.16437 0.46302 11.3053 0.838165 15.3924L0.868838 15.7266L1.13844 15.9264C2.81818 17.1714 4.68053 18.1233 6.68582 18.719L7.18892 18.8684L7.50166 18.4469C7.96179 17.8268 8.36504 17.1824 8.709 16.4944L8.71099 16.4904C10.8645 17.0471 13.128 17.0485 15.2821 16.4947C15.6261 17.1826 16.0293 17.8269 16.4892 18.4469L16.805 18.8725L17.3116 18.717C19.3056 18.105 21.1876 17.1751 22.8559 15.9238L23.1224 15.724L23.1528 15.3923C23.5873 10.6524 22.3579 6.53306 19.8947 2.90714L19.7759 2.73227L19.5833 2.64518C18.1437 1.99439 16.6386 1.51826 15.0686 1.25995ZM16.6074 10.7755L16.6074 10.7756C16.5934 11.6409 16.0212 12.1444 15.4783 12.1444C14.9297 12.1444 14.3493 11.6173 14.3493 10.7877C14.3493 9.94885 14.9378 9.41192 15.4783 9.41192C16.0471 9.41192 16.6209 9.93851 16.6074 10.7755ZM8.49373 12.1444C7.94513 12.1444 7.36471 11.6173 7.36471 10.7877C7.36471 9.94885 7.95323 9.41192 8.49373 9.41192C9.06038 9.41192 9.63892 9.93712 9.6417 10.7815C9.62517 11.6239 9.05462 12.1444 8.49373 12.1444Z"
-          strokeWidth="1.5"
-        />
-      </svg>
-    ),
-  },
-];
+        <div ref={setNodeRef} className='min-h-24 space-y-4'>
+          {column.tasks.map((task) => (
+            <SortableTask key={task.id} task={task} />
+          ))}
+        </div>
+      </SortableContext>
+    </div>
+  );
+}
+
+function SortableTask({ task }: { task: Task }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: task.id,
+  });
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={isDragging ? 'relative z-10 opacity-60' : undefined}
+      {...attributes}
+      {...listeners}
+    >
+      <TaskSingle
+        id={task.id}
+        title={task.title}
+        tag={task.tag}
+        storyPoints={task.storyPoints}
+      />
+    </div>
+  );
+}

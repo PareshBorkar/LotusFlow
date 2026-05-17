@@ -1,4 +1,4 @@
-# TaskFlow API
+# LotusFlow API
 
 A high-performance REST API for the Team Project Management SaaS application built with Fastify.
 

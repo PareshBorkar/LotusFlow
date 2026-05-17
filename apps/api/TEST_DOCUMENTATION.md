@@ -1,7 +1,7 @@
 # Test Suite Documentation
 
 ## Overview
-Comprehensive test suite for TaskFlow API with 50+ test cases covering all endpoints and edge cases.
+Comprehensive test suite for LotusFlow API with 50+ test cases covering all endpoints and edge cases.
 
 ## Test Structure
 

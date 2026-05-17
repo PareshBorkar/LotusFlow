@@ -50,4 +50,4 @@ const PORT = Number(process.env.PORT || 4000);
 
 const app = await createApp();
 await app.listen({ port: PORT, host: "0.0.0.0" });
-console.log(`TaskFlow API listening on http://localhost:${PORT}`);
+console.log(`LotusFlow API listening on http://localhost:${PORT}`);

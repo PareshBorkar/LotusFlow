@@ -1,11 +1,7 @@
-import type { Route } from "../+types/home";
-import { Welcome } from "../../components/welcome/welcome";
+import { Welcome } from '../../components/welcome/welcome';
 
-export function meta({}: Route.MetaArgs) {
-  return [
-    { title: "New React Router App" },
-    { name: "description", content: "Welcome to React Router!" },
-  ];
+export function meta() {
+  return [{ title: 'LotusFlow' }, { name: 'description', content: 'Welcome to LotusFlow' }];
 }
 
 export default function Home() {
