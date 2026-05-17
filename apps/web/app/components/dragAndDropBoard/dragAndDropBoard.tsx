@@ -134,7 +134,7 @@ const initialColumns: BoardColumn[] = [
   },
 ];
 
-export function Welcome() {
+export function DragAndDropBoard() {
   const [isOpen, setIsOpen] = useState(false);
   const [columns, setColumns] = useState(initialColumns);
   const sensors = useSensors(
@@ -145,7 +145,7 @@ export function Welcome() {
     }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
+    }),
   );
 
   function findColumnIndexByTaskId(taskId: string) {
@@ -341,12 +341,7 @@ function SortableTask({ task }: { task: Task }) {
       {...attributes}
       {...listeners}
     >
-      <TaskSingle
-        id={task.id}
-        title={task.title}
-        tag={task.tag}
-        storyPoints={task.storyPoints}
-      />
+      <TaskSingle id={task.id} title={task.title} tag={task.tag} storyPoints={task.storyPoints} />
     </div>
   );
 }
