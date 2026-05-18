@@ -1,215 +1,16 @@
-import {
-  closestCorners,
-  DndContext,
-  type DragEndEvent,
-  KeyboardSensor,
-  PointerSensor,
-  useDroppable,
-  useSensor,
-  useSensors,
-} from '@dnd-kit/core';
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  useSortable,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
+import { closestCorners, DndContext, useDroppable } from '@dnd-kit/core';
+import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { MoreHorizontal, Search } from 'lucide-react';
-import { useState } from 'react';
+import { useDisclosure, useTaskBoard, type BoardColumn } from '../../hooks';
 import TaskSingle from './taskSingle';
 import TaskPopUp from './taskPopUp';
 
-type TaskTag = 'Frontend' | 'Backend' | 'DevOps';
-
-type Task = {
-  id: string;
-  title: string;
-  tag: TaskTag;
-  storyPoints?: number;
-};
-
-type BoardColumn = {
-  title: string;
-  count: number;
-  tasks: Task[];
-};
-
-const initialColumns: BoardColumn[] = [
-  {
-    title: 'TO DO',
-    count: 14,
-    tasks: [
-      {
-        id: 'NP-123',
-        title: 'Implement user avatar upload',
-        tag: 'Frontend',
-        storyPoints: 5,
-      },
-      {
-        id: 'NP-124',
-        title: 'Add global search functionality',
-        tag: 'Backend',
-        storyPoints: 3,
-      },
-      {
-        id: 'NP-125',
-        title: 'Create notifications preferences',
-        tag: 'Frontend',
-        storyPoints: 2,
-      },
-    ],
-  },
-  {
-    title: 'IN PROGRESS',
-    count: 5,
-    tasks: [
-      {
-        id: 'NP-126',
-        title: 'Integrate payment gateway',
-        tag: 'Backend',
-        storyPoints: 5,
-      },
-      {
-        id: 'NP-127',
-        title: 'Build admin dashboard analytics',
-        tag: 'Frontend',
-        storyPoints: 3,
-      },
-      {
-        id: 'NP-128',
-        title: 'Add activity log',
-        tag: 'Backend',
-        storyPoints: 2,
-      },
-    ],
-  },
-  {
-    title: 'IN REVIEW',
-    count: 3,
-    tasks: [
-      {
-        id: 'NP-129',
-        title: 'Improve mobile responsiveness',
-        tag: 'Frontend',
-        storyPoints: 5,
-      },
-      {
-        id: 'NP-130',
-        title: 'Optimize database queries',
-        tag: 'Backend',
-        storyPoints: 3,
-      },
-      {
-        id: 'NP-131',
-        title: 'Add unit tests for user service',
-        tag: 'Backend',
-      },
-    ],
-  },
-  {
-    title: 'DONE',
-    count: 8,
-    tasks: [
-      {
-        id: 'NP-120',
-        title: 'Setup CI/CD pipeline',
-        tag: 'DevOps',
-        storyPoints: 5,
-      },
-      {
-        id: 'NP-121',
-        title: 'Design system components',
-        tag: 'Frontend',
-        storyPoints: 3,
-      },
-      {
-        id: 'NP-122',
-        title: 'User authentication flow',
-        tag: 'Backend',
-        storyPoints: 8,
-      },
-    ],
-  },
-];
+import { initialColumns } from '~/api/mockData';
 
 export function DragAndDropBoard() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [columns, setColumns] = useState(initialColumns);
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8,
-      },
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    }),
-  );
-
-  function findColumnIndexByTaskId(taskId: string) {
-    return columns.findIndex((column) => column.tasks.some((task) => task.id === taskId));
-  }
-
-  function findColumnIndexById(id: string) {
-    const columnIndex = columns.findIndex((column) => column.title === id);
-
-    if (columnIndex !== -1) {
-      return columnIndex;
-    }
-
-    return findColumnIndexByTaskId(id);
-  }
-
-  function handleDragEnd({ active, over }: DragEndEvent) {
-    if (!over || active.id === over.id) {
-      return;
-    }
-
-    const activeId = String(active.id);
-    const overId = String(over.id);
-    const sourceColumnIndex = findColumnIndexByTaskId(activeId);
-    const destinationColumnIndex = findColumnIndexById(overId);
-
-    if (sourceColumnIndex === -1 || destinationColumnIndex === -1) {
-      return;
-    }
-
-    setColumns((currentColumns) => {
-      const nextColumns = currentColumns.map((column) => ({
-        ...column,
-        tasks: [...column.tasks],
-      }));
-      const sourceColumn = nextColumns[sourceColumnIndex];
-      const destinationColumn = nextColumns[destinationColumnIndex];
-      const activeTaskIndex = sourceColumn.tasks.findIndex((task) => task.id === activeId);
-
-      if (activeTaskIndex === -1) {
-        return currentColumns;
-      }
-
-      if (sourceColumnIndex === destinationColumnIndex) {
-        const overTaskIndex = destinationColumn.tasks.findIndex((task) => task.id === overId);
-
-        if (overTaskIndex === -1) {
-          return currentColumns;
-        }
-
-        sourceColumn.tasks = arrayMove(sourceColumn.tasks, activeTaskIndex, overTaskIndex);
-        return nextColumns;
-      }
-
-      const [activeTask] = sourceColumn.tasks.splice(activeTaskIndex, 1);
-      const overTaskIndex = destinationColumn.tasks.findIndex((task) => task.id === overId);
-      const destinationIndex =
-        overTaskIndex === -1 ? destinationColumn.tasks.length : overTaskIndex;
-
-      destinationColumn.tasks.splice(destinationIndex, 0, activeTask);
-
-      return nextColumns;
-    });
-  }
+  const { isOpen, open, close } = useDisclosure();
+  const { columns, sensors, handleDragEnd } = useTaskBoard(initialColumns);
 
   return (
     <>
@@ -218,12 +19,10 @@ export function DragAndDropBoard() {
         <div className='mb-6 flex items-center justify-between'>
           <div>
             <p className='text-sm text-slate-400'>Projects / Nova Platform</p>
-
             <h1 className='mt-1 text-3xl font-bold text-slate-800'>Board</h1>
           </div>
-
           <button
-            onClick={() => setIsOpen(true)}
+            onClick={open}
             className='rounded-lg bg-blue-600 px-5 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-blue-700 hover:cursor-pointer'
           >
             Create
@@ -287,7 +86,7 @@ export function DragAndDropBoard() {
       </div>
       {isOpen && (
         <div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50 rounded-lg'>
-          <TaskPopUp close={() => setIsOpen(false)} />
+          <TaskPopUp close={close} mode='create' />
         </div>
       )}
     </>
@@ -324,7 +123,7 @@ function BoardColumn({ column }: { column: BoardColumn }) {
   );
 }
 
-function SortableTask({ task, status }: { task: Task; status: string }) {
+function SortableTask({ task, status }: { task: BoardColumn['tasks'][number]; status: string }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: task.id,
   });
