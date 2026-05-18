@@ -7,9 +7,10 @@ interface TaskSingleProps {
   title: string;
   tag: TaskTag;
   storyPoints?: number;
+  status: string;
 }
 
-export default function TaskSingle({ id, title, tag, storyPoints }: TaskSingleProps) {
+export default function TaskSingle({ id, title, tag, storyPoints, status }: TaskSingleProps) {
   const [isOpen, setIsOpen] = useState(false);
   const tagStyles: Record<TaskTag, string> = {
     Frontend: 'bg-purple-100 text-purple-700',
@@ -57,7 +58,14 @@ export default function TaskSingle({ id, title, tag, storyPoints }: TaskSinglePr
       </div>
       {isOpen && (
         <div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50 rounded-lg'>
-          <TaskPopUp close={() => setIsOpen(false)} />
+          <TaskPopUp
+            taskId={id}
+            taskName={title}
+            tag={tag}
+            storyPoints={storyPoints}
+            status={status}
+            close={() => setIsOpen(false)}
+          />
         </div>
       )}
     </>

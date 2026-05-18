@@ -14,7 +14,30 @@ import {
 } from 'lucide-react';
 import type { ReactNode } from 'react';
 
-export default function TaskPopUp({ close }: { close: () => void }) {
+type TaskTag = 'Frontend' | 'Backend' | 'DevOps';
+type mode = 'create' | 'view';
+interface TaskPopUpProps {
+  close: () => void;
+  taskName?: string;
+  taskId?: string;
+  tag?: TaskTag;
+  storyPoints?: number;
+  status?: string;
+}
+
+export default function TaskPopUp({
+  close,
+  taskName = '',
+  taskId = '',
+  tag = 'Frontend',
+  storyPoints = 0,
+  status = '',
+}: TaskPopUpProps) {
+  const tagStyles: Record<TaskTag, string> = {
+    Frontend: 'bg-purple-100 text-purple-700',
+    Backend: 'bg-green-100 text-green-700',
+    DevOps: 'bg-slate-200 text-slate-700',
+  };
   return (
     <div className='w-full max-w-5xl max-h-[90vh] rounded-2xl border border-slate-200 bg-white shadow-lg overflow-hidden flex flex-col'>
       {/* Header */}
@@ -23,7 +46,7 @@ export default function TaskPopUp({ close }: { close: () => void }) {
           <div className='flex items-center gap-2 text-sm text-slate-500'>
             <div className='h-3 w-3 rounded-sm bg-green-500' />
 
-            <span className='font-medium'>NP-126</span>
+            <span className='font-medium'>{taskId}</span>
           </div>
 
           <div className='flex items-center gap-4 text-slate-400'>
@@ -39,9 +62,7 @@ export default function TaskPopUp({ close }: { close: () => void }) {
           </div>
         </div>
 
-        <h1 className='text-3xl font-bold tracking-tight text-slate-800'>
-          Integrate payment gateway
-        </h1>
+        <h1 className='text-3xl font-bold tracking-tight text-slate-800'>{taskName}</h1>
 
         {/* Actions */}
         <div className='mt-5 flex flex-wrap items-center gap-3'>
@@ -74,7 +95,7 @@ export default function TaskPopUp({ close }: { close: () => void }) {
             label='Status'
             value={
               <span className='rounded-md bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700'>
-                In Progress
+                {status}
               </span>
             }
           />
@@ -93,10 +114,9 @@ export default function TaskPopUp({ close }: { close: () => void }) {
             label='Labels'
             value={
               <div className='flex items-center gap-3'>
-                <span className='rounded-md bg-green-100 px-3 py-1 text-sm font-medium text-green-700'>
-                  Backend
+                <span className={`rounded-md px-3 py-1 text-sm font-medium ${tagStyles[tag]}`}>
+                  {tag}
                 </span>
-
                 <Plus size={16} className='cursor-pointer text-slate-400 hover:text-slate-600' />
               </div>
             }
@@ -185,7 +205,6 @@ function DetailRow({ label, value }: { label: string; value: ReactNode }) {
   return (
     <div className='grid grid-cols-[110px_1fr] items-center gap-4'>
       <span className='text-sm font-medium text-slate-500'>{label}</span>
-
       <div>{value}</div>
     </div>
   );

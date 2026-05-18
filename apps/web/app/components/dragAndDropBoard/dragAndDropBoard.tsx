@@ -316,7 +316,7 @@ function BoardColumn({ column }: { column: BoardColumn }) {
       >
         <div ref={setNodeRef} className='min-h-24 space-y-4'>
           {column.tasks.map((task) => (
-            <SortableTask key={task.id} task={task} />
+            <SortableTask key={task.id} task={task} status={column.title} />
           ))}
         </div>
       </SortableContext>
@@ -324,7 +324,7 @@ function BoardColumn({ column }: { column: BoardColumn }) {
   );
 }
 
-function SortableTask({ task }: { task: Task }) {
+function SortableTask({ task, status }: { task: Task; status: string }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: task.id,
   });
@@ -341,7 +341,13 @@ function SortableTask({ task }: { task: Task }) {
       {...attributes}
       {...listeners}
     >
-      <TaskSingle id={task.id} title={task.title} tag={task.tag} storyPoints={task.storyPoints} />
+      <TaskSingle
+        id={task.id}
+        title={task.title}
+        tag={task.tag}
+        storyPoints={task.storyPoints}
+        status={status}
+      />
     </div>
   );
 }
