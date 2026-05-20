@@ -42,7 +42,7 @@ type TaskDrawerProps = {
   storyPoints?: number;
 };
 
-export default function TaskDrawer({
+export default function TaskModal({
   close,
   mode = 'view',
   taskName = '',

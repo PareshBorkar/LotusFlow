@@ -10,7 +10,7 @@ import { defineConfig, devices } from '@playwright/test';
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
-  testDir: './app/pages',
+  testDir: './app/routes',
   /* Run tests in files that end with .spec.ts */
   testMatch: '**/*.spec.ts',
   /* Run tests in parallel */

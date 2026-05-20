@@ -3,12 +3,12 @@ import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-
 import { CSS } from '@dnd-kit/utilities';
 import { MoreHorizontal, Search } from 'lucide-react';
 import { useDisclosure, useTaskBoard, type BoardColumn } from '../../hooks';
-import TaskSingle from './taskSingle';
-import TaskPopUp from './taskPopUp';
+import TaskCard from './taskCard';
+import TaskModal from './taskModal';
 
 import { initialColumns } from '~/api/mockData';
 
-export function DragAndDropBoard() {
+export function KanbanBoard() {
   const { isOpen, open, close } = useDisclosure();
   const { columns, sensors, handleDragEnd } = useTaskBoard(initialColumns);
 
@@ -86,7 +86,7 @@ export function DragAndDropBoard() {
       </div>
       {isOpen && (
         <div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50 rounded-lg'>
-          <TaskPopUp close={close} mode='create' />
+          <TaskModal close={close} mode='create' />
         </div>
       )}
     </>
@@ -140,7 +140,7 @@ function SortableTask({ task, status }: { task: BoardColumn['tasks'][number]; st
       {...attributes}
       {...listeners}
     >
-      <TaskSingle
+      <TaskCard
         id={task.id}
         title={task.title}
         tag={task.tag}

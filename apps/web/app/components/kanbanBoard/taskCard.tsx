@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import TaskPopUp from './taskPopUp';
+import TaskModal from './taskModal';
 type TaskTag = 'Frontend' | 'Backend' | 'DevOps';
 
 interface TaskSingleProps {
@@ -10,7 +10,7 @@ interface TaskSingleProps {
   status: string;
 }
 
-export default function TaskSingle({ id, title, tag, storyPoints, status }: TaskSingleProps) {
+export default function TaskCard({ id, title, tag, storyPoints, status }: TaskSingleProps) {
   const [isOpen, setIsOpen] = useState(false);
   const tagStyles: Record<TaskTag, string> = {
     Frontend: 'bg-purple-100 text-purple-700',
@@ -58,7 +58,7 @@ export default function TaskSingle({ id, title, tag, storyPoints, status }: Task
       </div>
       {isOpen && (
         <div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50 rounded-lg'>
-          <TaskPopUp
+          <TaskModal
             taskId={id}
             taskName={title}
             tag={tag}
