@@ -99,21 +99,13 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         {/* Navigation */}
         <nav className='space-y-1'>
           <SidebarItem icon={<BookOpen size={17} />} label='Roadmap' isOpen={isOpen} />
-
           <SidebarItem active icon={<PanelLeft size={17} />} label='Board' isOpen={isOpen} />
-
           <SidebarItem icon={<ListTodo size={17} />} label='Backlog' isOpen={isOpen} />
-
           <SidebarItem icon={<Boxes size={17} />} label='Active sprints' isOpen={isOpen} />
-
           <SidebarItem icon={<Gauge size={17} />} label='Reports' isOpen={isOpen} />
-
           <SidebarItem icon={<ClipboardList size={17} />} label='Issues' isOpen={isOpen} />
-
           <SidebarItem icon={<BadgeCheck size={17} />} label='Components' isOpen={isOpen} />
-
           <SidebarItem icon={<LayoutGrid size={17} />} label='Releases' isOpen={isOpen} />
-
           <SidebarItem icon={<Settings size={17} />} label='Project settings' isOpen={isOpen} />
         </nav>
       </div>

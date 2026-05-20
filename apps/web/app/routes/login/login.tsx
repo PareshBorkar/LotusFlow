@@ -105,6 +105,7 @@ export default function LoginPage() {
         email: normalizedEmail,
         rememberMe: values.rememberMe,
         loggedInAt: new Date().toISOString(),
+        permissions: ["dashboard:view", "roadmap:view", "backlog:view", "reports:view"],
       };
 
       dispatch(loginSucceeded({ session, activeWorkspace: nextWorkspace }));

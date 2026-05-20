@@ -5,6 +5,7 @@ export type AuthSession = {
   email: string;
   rememberMe: boolean;
   loggedInAt: string;
+  permissions: string[];
 };
 
 type AuthState = {
