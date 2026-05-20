@@ -2,7 +2,7 @@ import { useState } from 'react';
 import TaskModal from './taskModal';
 type TaskTag = 'Frontend' | 'Backend' | 'DevOps';
 
-interface TaskSingleProps {
+interface TaskCardProps {
   id: string;
   title: string;
   tag: TaskTag;
@@ -10,7 +10,7 @@ interface TaskSingleProps {
   status: string;
 }
 
-export default function TaskCard({ id, title, tag, storyPoints, status }: TaskSingleProps) {
+export default function TaskCard({ id, title, tag, storyPoints, status }: TaskCardProps) {
   const [isOpen, setIsOpen] = useState(false);
   const tagStyles: Record<TaskTag, string> = {
     Frontend: 'bg-purple-100 text-purple-700',
