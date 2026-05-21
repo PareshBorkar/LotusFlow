@@ -16,6 +16,7 @@ import {
   X,
 } from 'lucide-react';
 import type { ReactNode } from 'react';
+import { NavLink } from 'react-router';
 
 type SidebarProps = {
   isOpen: boolean;
@@ -28,6 +29,8 @@ type SidebarItemProps = {
   active?: boolean;
   rightContent?: ReactNode;
   isOpen?: boolean;
+  path?: string;
+  disabled?: boolean;
 };
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
@@ -98,14 +101,46 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
         {/* Navigation */}
         <nav className='space-y-1'>
-          <SidebarItem icon={<BookOpen size={17} />} label='Roadmap' isOpen={isOpen} />
-          <SidebarItem active icon={<PanelLeft size={17} />} label='Board' isOpen={isOpen} />
-          <SidebarItem icon={<ListTodo size={17} />} label='Backlog' isOpen={isOpen} />
-          <SidebarItem icon={<Boxes size={17} />} label='Active sprints' isOpen={isOpen} />
-          <SidebarItem icon={<Gauge size={17} />} label='Reports' isOpen={isOpen} />
-          <SidebarItem icon={<ClipboardList size={17} />} label='Issues' isOpen={isOpen} />
-          <SidebarItem icon={<BadgeCheck size={17} />} label='Components' isOpen={isOpen} />
-          <SidebarItem icon={<LayoutGrid size={17} />} label='Releases' isOpen={isOpen} />
+          <SidebarItem
+            icon={<BookOpen size={17} />}
+            label='Roadmap'
+            path='/roadmap'
+            isOpen={isOpen}
+          />
+          <SidebarItem icon={<PanelLeft size={17} />} label='Board' path='/' isOpen={isOpen} />
+          <SidebarItem
+            icon={<ListTodo size={17} />}
+            label='Backlog'
+            path='/backlog'
+            isOpen={isOpen}
+          />
+          <SidebarItem icon={<Gauge size={17} />} label='Reports' path='/reports' isOpen={isOpen} />
+          <SidebarItem
+            icon={<Boxes size={17} />}
+            label='Active sprints'
+            path='/sprints'
+            isOpen={isOpen}
+            disabled={true}
+          />
+
+          <SidebarItem
+            icon={<ClipboardList size={17} />}
+            label='Issues'
+            path='/issues'
+            isOpen={isOpen}
+          />
+          <SidebarItem
+            icon={<BadgeCheck size={17} />}
+            label='Components'
+            path='/components'
+            isOpen={isOpen}
+          />
+          <SidebarItem
+            icon={<LayoutGrid size={17} />}
+            label='Releases'
+            path='/releases'
+            isOpen={isOpen}
+          />
           <SidebarItem icon={<Settings size={17} />} label='Project settings' isOpen={isOpen} />
         </nav>
       </div>
@@ -128,39 +163,84 @@ function SidebarItem({
   active = false,
   rightContent = null,
   isOpen = true,
+  path = '',
+  disabled = false,
 }: SidebarItemProps) {
+  const baseClassName = isOpen
+    ? 'flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition'
+    : 'flex items-center justify-between rounded-lg py-2.5 text-sm font-medium transition';
+
+  const stateClassName = (isActive: boolean) =>
+    isActive || active
+      ? 'bg-blue-50 text-blue-700'
+      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900';
+
   if (!isOpen) {
+    // Collapsed state - only show icons
+    const content = (
+      <div className='flex items-center gap-3'>
+        <span>{icon}</span>
+      </div>
+    );
+
+    if (path) {
+      return (
+        <NavLink
+          to={path}
+          end={path === '/'}
+          className={({ isActive }) => `${baseClassName} ${stateClassName(isActive)}`}
+          aria-label={label}
+          onClick={(e: any) => {
+            if (disabled) {
+              alert('This feature is coming soon!');
+              e.preventDefault();
+            }
+          }}
+        >
+          {content}
+        </NavLink>
+      );
+    }
+
     return (
-      <button
-        type='button'
-        className={`flex items-center justify-between rounded-lg py-2.5 text-sm font-medium transition ${
-          active
-            ? 'bg-blue-50 text-blue-700'
-            : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-        }`}
-      >
-        <div className='flex items-center gap-3'>
-          <span>{icon}</span>
-        </div>
+      <button type='button' className={`${baseClassName} ${stateClassName(false)}`}>
+        {content}
       </button>
     );
   }
-  return (
-    <button
-      type='button'
-      className={`flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition ${
-        active
-          ? 'bg-blue-50 text-blue-700'
-          : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-      }`}
-    >
+
+  const content = (
+    <>
       <div className='flex items-center gap-3'>
         <span>{icon}</span>
-
         <span>{label}</span>
       </div>
-
       {rightContent}
+      {/* to generate content like + in the sidebar Item */}
+    </>
+  );
+
+  if (path) {
+    return (
+      <NavLink
+        to={path}
+        end={path === '/'}
+        className={({ isActive }) => `${baseClassName} ${stateClassName(isActive)}`}
+        onClick={(e: any) => {
+          if (disabled) {
+            alert('This feature is coming soon!');
+            e.preventDefault();
+          }
+        }}
+      >
+        {content}
+      </NavLink>
+    );
+  }
+
+  return (
+    <button type='button' className={`${baseClassName} ${stateClassName(false)}`}>
+      {content}
     </button>
   );
 }

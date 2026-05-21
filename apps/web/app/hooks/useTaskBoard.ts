@@ -1,6 +1,6 @@
 import { type DragEndEvent, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export type TaskTag = 'Frontend' | 'Backend' | 'DevOps';
 
@@ -40,6 +40,10 @@ export function useTaskBoard(initialColumns: BoardColumn[]) {
       },
     }),
   );
+
+  useEffect(() => {
+    setColumns(initialColumns);
+  }, [initialColumns]);
 
   const handleDragEnd = useCallback(({ active, over }: DragEndEvent) => {
     if (!over || active.id === over.id) {

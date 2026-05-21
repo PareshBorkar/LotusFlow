@@ -2,15 +2,72 @@ import { closestCorners, DndContext, useDroppable } from '@dnd-kit/core';
 import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { MoreHorizontal, Search } from 'lucide-react';
-import { useDisclosure, useTaskBoard, type BoardColumn } from '../../hooks';
+import { useMemo } from 'react';
+import { useDisclosure, useTaskBoard, type BoardColumn, type TaskTag } from '../../hooks';
+import { useGetTasksQuery, type Task } from '../../store';
 import TaskCard from './taskCard';
 import TaskModal from './taskModal';
 
 import { initialColumns } from '~/api/mockData';
 
+const boardColumns = [
+  { title: 'TO DO', status: 'todo' },
+  { title: 'IN PROGRESS', status: 'in_progress' },
+  { title: 'IN REVIEW', status: 'in_review' },
+  { title: 'DONE', status: 'done' },
+];
+
+function getTaskTag(priority: string): TaskTag {
+  if (priority === 'high') {
+    return 'Backend';
+  }
+
+  if (priority === 'medium') {
+    return 'Frontend';
+  }
+
+  return 'DevOps';
+}
+
+function getStoryPoints(task: Task) {
+  if (task.priority === 'high') {
+    return 5;
+  }
+
+  if (task.priority === 'medium') {
+    return 3;
+  }
+
+  return 1;
+}
+
+function buildColumns(tasks: Task[]): BoardColumn[] {
+  return boardColumns.map((column) => {
+    const columnTasks = tasks
+      .filter((task) => task.status === column.status)
+      .map((task) => ({
+        id: task.id,
+        title: task.title,
+        tag: getTaskTag(task.priority),
+        storyPoints: getStoryPoints(task),
+      }));
+
+    return {
+      title: column.title,
+      count: columnTasks.length,
+      tasks: columnTasks,
+    };
+  });
+}
+
 export function KanbanBoard() {
   const { isOpen, open, close } = useDisclosure();
-  const { columns, sensors, handleDragEnd } = useTaskBoard(initialColumns);
+  const { data, isError, isFetching } = useGetTasksQuery({});
+  const initialBoardColumns = useMemo(
+    () => (data ? buildColumns(data.items) : initialColumns),
+    [data],
+  );
+  const { columns, sensors, handleDragEnd } = useTaskBoard(initialBoardColumns);
 
   return (
     <>
@@ -76,6 +133,18 @@ export function KanbanBoard() {
         </div>
 
         {/* Board */}
+        {isFetching ? (
+          <div className='mb-4 rounded-lg border border-blue-100 bg-blue-50 px-4 py-3 text-sm font-medium text-blue-700'>
+            Loading tasks...
+          </div>
+        ) : null}
+
+        {isError ? (
+          <div className='mb-4 rounded-lg border border-rose-100 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700'>
+            Could not load tasks from the API. Showing local board data.
+          </div>
+        ) : null}
+
         <DndContext sensors={sensors} collisionDetection={closestCorners} onDragEnd={handleDragEnd}>
           <div className='grid grid-cols-1 gap-6 lg:grid-cols-4'>
             {columns.map((column) => (
