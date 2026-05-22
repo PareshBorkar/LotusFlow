@@ -8,7 +8,7 @@ The test suite includes comprehensive coverage for:
 
 ### Form Rendering
 - All form elements render correctly (inputs, labels, buttons)
-- TaskFlow branding display
+- LotusFlow branding display
 - Demo workspace preview section
 - Correct input types and placeholders
 - Navigation links

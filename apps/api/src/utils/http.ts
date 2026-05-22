@@ -1,4 +1,6 @@
-export function sendJson(response, statusCode, payload) {
+import type { IncomingMessage, ServerResponse } from "http";
+
+export function sendJson(response: ServerResponse, statusCode: number, payload: unknown) {
   response.writeHead(statusCode, {
     "Content-Type": "application/json; charset=utf-8",
     "Access-Control-Allow-Origin": "*",
@@ -8,7 +10,7 @@ export function sendJson(response, statusCode, payload) {
   response.end(JSON.stringify(payload));
 }
 
-export function sendNoContent(response) {
+export function sendNoContent(response: ServerResponse) {
   response.writeHead(204, {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "GET,POST,PATCH,OPTIONS",
@@ -17,11 +19,11 @@ export function sendNoContent(response) {
   response.end();
 }
 
-export async function readJsonBody(request) {
-  const chunks = [];
+export async function readJsonBody(request: IncomingMessage) {
+  const chunks: Buffer[] = [];
 
   for await (const chunk of request) {
-    chunks.push(chunk);
+    chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
   }
 
   if (chunks.length === 0) {
@@ -37,7 +39,7 @@ export async function readJsonBody(request) {
   }
 }
 
-export function matchesRoute(method, pathname, routePattern) {
+export function matchesRoute(method: string, pathname: string, routePattern: string) {
   if (method === "OPTIONS") {
     return false;
   }
@@ -54,13 +56,13 @@ export function matchesRoute(method, pathname, routePattern) {
   });
 }
 
-export function getRouteParams(pathname, routePattern) {
+export function getRouteParams(pathname: string, routePattern: string) {
   const routeParts = routePattern.split("/").filter(Boolean);
   const pathParts = pathname.split("/").filter(Boolean);
 
-  return routeParts.reduce((params, part, index) => {
+  return routeParts.reduce<Record<string, string>>((params, part, index) => {
     if (part.startsWith(":")) {
-      params[part.slice(1)] = pathParts[index];
+      params[part.slice(1)] = pathParts[index] || "";
     }
 
     return params;

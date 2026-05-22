@@ -1,7 +1,27 @@
+import type { FastifyInstance } from "fastify";
 import { tasks } from "../data/mockData.js";
 
-export default async function taskRoutes(app) {
-  app.get("/api/tasks", async (req, reply) => {
+type TaskQuery = {
+  projectId?: string;
+  status?: string;
+  priority?: string;
+};
+
+type TaskBody = {
+  projectId?: string;
+  title?: string;
+  description?: string;
+  priority?: string;
+  assignee?: string;
+  status?: string;
+};
+
+type TaskParams = {
+  taskId: string;
+};
+
+export default async function taskRoutes(app: FastifyInstance) {
+  app.get<{ Querystring: TaskQuery }>("/tasks", async (req, reply) => {
     const { projectId, status, priority } = req.query;
 
     const items = tasks.filter((task) => {
@@ -18,7 +38,7 @@ export default async function taskRoutes(app) {
     });
   });
 
-  app.post("/api/tasks", async (req, reply) => {
+  app.post<{ Body: TaskBody }>("/tasks", async (req, reply) => {
     const { projectId, title, description, priority, assignee, status } = req.body;
 
     if (!projectId || !title) {
@@ -42,7 +62,7 @@ export default async function taskRoutes(app) {
     reply.code(201).send(task);
   });
 
-  app.get("/api/tasks/:taskId", async (req, reply) => {
+  app.get<{ Params: TaskParams }>("/tasks/:taskId", async (req, reply) => {
     const task = tasks.find((t) => t.id === req.params.taskId);
 
     if (!task) {
@@ -52,7 +72,7 @@ export default async function taskRoutes(app) {
     reply.send(task);
   });
 
-  app.patch("/api/tasks/:taskId", async (req, reply) => {
+  app.patch<{ Body: TaskBody; Params: TaskParams }>("/tasks/:taskId", async (req, reply) => {
     const task = tasks.find((t) => t.id === req.params.taskId);
 
     if (!task) {
@@ -78,7 +98,7 @@ export default async function taskRoutes(app) {
     reply.send(task);
   });
 
-  app.delete("/api/tasks/:taskId", async (req, reply) => {
+  app.delete<{ Params: TaskParams }>("/tasks/:taskId", async (req, reply) => {
     const index = tasks.findIndex((t) => t.id === req.params.taskId);
 
     if (index === -1) {

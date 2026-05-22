@@ -27,8 +27,8 @@ test.describe('Login Page', () => {
       await expect(page.locator('button:has-text("Forgot password?")')).toBeVisible();
     });
 
-    test('should display TaskFlow branding', async ({ page }) => {
-      await expect(page.locator('text=TaskFlow')).toBeVisible();
+    test('should display LotusFlow branding', async ({ page }) => {
+      await expect(page.locator('text=LotusFlow')).toBeVisible();
     });
 
     test('should display demo workspace preview section', async ({ page }) => {

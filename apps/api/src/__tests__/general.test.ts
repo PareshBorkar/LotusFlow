@@ -24,6 +24,8 @@ describe("General Routes", () => {
       expect(body.status).toBe("ok");
       expect(body).toHaveProperty("service");
       expect(body.service).toBe("taskflow-api");
+      expect(body).toHaveProperty("version");
+      expect(body.version).toBe("v1");
       expect(body).toHaveProperty("timestamp");
     });
 
@@ -36,6 +38,41 @@ describe("General Routes", () => {
       const body = JSON.parse(response.body);
       const timestamp = new Date(body.timestamp);
       expect(timestamp.toString()).not.toBe("Invalid Date");
+    });
+  });
+
+  describe("API Versioning", () => {
+    test("should expose the current API version metadata", async () => {
+      const response = await app.inject({
+        method: "GET",
+        url: "/api",
+      });
+
+      expect(response.statusCode).toBe(200);
+      const body = JSON.parse(response.body);
+      expect(body.currentVersion).toBe("v1");
+      expect(body.basePath).toBe("/api/v1");
+    });
+
+    test("should serve endpoints from the v1 prefix", async () => {
+      const response = await app.inject({
+        method: "GET",
+        url: "/api/v1/projects",
+      });
+
+      expect(response.statusCode).toBe(200);
+      const body = JSON.parse(response.body);
+      expect(body).toHaveProperty("items");
+      expect(body).toHaveProperty("total");
+    });
+
+    test("should keep legacy /api endpoints available", async () => {
+      const response = await app.inject({
+        method: "GET",
+        url: "/api/projects",
+      });
+
+      expect(response.statusCode).toBe(200);
     });
   });
 
