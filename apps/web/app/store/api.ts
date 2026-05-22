@@ -48,7 +48,7 @@ export type DashboardData = {
 
 export const api = createApi({
   reducerPath: 'api',
-  baseQuery: fetchBaseQuery({ baseUrl: '/api' }),
+  baseQuery: fetchBaseQuery({ baseUrl: '/api/v1' }),
   tagTypes: ['Auth', 'Projects', 'Tasks', 'Workspaces', 'Dashboard'],
   endpoints: (builder) => ({
     // Auth endpoints

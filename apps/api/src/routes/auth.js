@@ -1,7 +1,7 @@
 import { workspaces } from "../data/mockData.js";
 
 export default async function authRoutes(app) {
-  app.post("/api/auth/login", async (req, reply) => {
+  app.post("/auth/login", async (req, reply) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -27,7 +27,7 @@ export default async function authRoutes(app) {
     });
   });
 
-  app.post("/api/auth/signup", async (req, reply) => {
+  app.post("/auth/signup", async (req, reply) => {
     const { email, password, name } = req.body;
 
     if (!email || !password || !name) {

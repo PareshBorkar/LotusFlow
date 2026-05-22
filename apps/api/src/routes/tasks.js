@@ -1,7 +1,7 @@
 import { tasks } from "../data/mockData.js";
 
 export default async function taskRoutes(app) {
-  app.get("/api/tasks", async (req, reply) => {
+  app.get("/tasks", async (req, reply) => {
     const { projectId, status, priority } = req.query;
 
     const items = tasks.filter((task) => {
@@ -18,7 +18,7 @@ export default async function taskRoutes(app) {
     });
   });
 
-  app.post("/api/tasks", async (req, reply) => {
+  app.post("/tasks", async (req, reply) => {
     const { projectId, title, description, priority, assignee, status } = req.body;
 
     if (!projectId || !title) {
@@ -42,7 +42,7 @@ export default async function taskRoutes(app) {
     reply.code(201).send(task);
   });
 
-  app.get("/api/tasks/:taskId", async (req, reply) => {
+  app.get("/tasks/:taskId", async (req, reply) => {
     const task = tasks.find((t) => t.id === req.params.taskId);
 
     if (!task) {
@@ -52,7 +52,7 @@ export default async function taskRoutes(app) {
     reply.send(task);
   });
 
-  app.patch("/api/tasks/:taskId", async (req, reply) => {
+  app.patch("/tasks/:taskId", async (req, reply) => {
     const task = tasks.find((t) => t.id === req.params.taskId);
 
     if (!task) {
@@ -78,7 +78,7 @@ export default async function taskRoutes(app) {
     reply.send(task);
   });
 
-  app.delete("/api/tasks/:taskId", async (req, reply) => {
+  app.delete("/tasks/:taskId", async (req, reply) => {
     const index = tasks.findIndex((t) => t.id === req.params.taskId);
 
     if (index === -1) {

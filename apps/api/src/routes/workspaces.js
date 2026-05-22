@@ -1,13 +1,13 @@
 import { workspaces } from "../data/mockData.js";
 
 export default async function workspaceRoutes(app) {
-  app.get("/api/workspaces", async (req, reply) => {
+  app.get("/workspaces", async (req, reply) => {
     reply.send({
       items: workspaces,
     });
   });
 
-  app.post("/api/workspaces", async (req, reply) => {
+  app.post("/workspaces", async (req, reply) => {
     const { name } = req.body;
 
     if (!name || typeof name !== "string") {
@@ -28,7 +28,7 @@ export default async function workspaceRoutes(app) {
     reply.code(201).send(workspace);
   });
 
-  app.get("/api/workspaces/:workspaceId", async (req, reply) => {
+  app.get("/workspaces/:workspaceId", async (req, reply) => {
     const workspace = workspaces.find((ws) => ws.id === req.params.workspaceId);
 
     if (!workspace) {

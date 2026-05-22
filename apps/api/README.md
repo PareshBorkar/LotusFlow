@@ -44,33 +44,39 @@ Tests cover all major endpoints and scenarios:
 
 ## API Endpoints
 
+API routes are versioned under `/api/v1`. The legacy `/api` routes remain
+available as compatibility aliases while clients migrate.
+
 ### Health Check
 - `GET /health` - API health status
 
+### API Metadata
+- `GET /api` - Current API version and base path
+
 ### Authentication
-- `POST /api/auth/login` - User login
-- `POST /api/auth/signup` - User signup
+- `POST /api/v1/auth/login` - User login
+- `POST /api/v1/auth/signup` - User signup
 
 ### Workspaces
-- `GET /api/workspaces` - List all workspaces
-- `POST /api/workspaces` - Create new workspace
-- `GET /api/workspaces/:workspaceId` - Get workspace details
+- `GET /api/v1/workspaces` - List all workspaces
+- `POST /api/v1/workspaces` - Create new workspace
+- `GET /api/v1/workspaces/:workspaceId` - Get workspace details
 
 ### Projects
-- `GET /api/projects?workspaceId=&search=&status=` - List projects (with filters)
-- `POST /api/projects` - Create new project
-- `GET /api/projects/:projectId` - Get project details with tasks
-- `GET /api/projects/:projectId/tasks` - Get all tasks in project
+- `GET /api/v1/projects?workspaceId=&search=&status=` - List projects (with filters)
+- `POST /api/v1/projects` - Create new project
+- `GET /api/v1/projects/:projectId` - Get project details with tasks
+- `GET /api/v1/projects/:projectId/tasks` - Get all tasks in project
 
 ### Tasks
-- `GET /api/tasks?projectId=&status=&priority=` - List tasks (with filters)
-- `POST /api/tasks` - Create new task
-- `GET /api/tasks/:taskId` - Get task details
-- `PATCH /api/tasks/:taskId` - Update task
-- `DELETE /api/tasks/:taskId` - Delete task
+- `GET /api/v1/tasks?projectId=&status=&priority=` - List tasks (with filters)
+- `POST /api/v1/tasks` - Create new task
+- `GET /api/v1/tasks/:taskId` - Get task details
+- `PATCH /api/v1/tasks/:taskId` - Update task
+- `DELETE /api/v1/tasks/:taskId` - Delete task
 
 ### Dashboard
-- `GET /api/dashboard` - Get dashboard summary with stats
+- `GET /api/v1/dashboard` - Get dashboard summary with stats
 
 ## Project Structure
 
@@ -126,5 +132,4 @@ src/
 - [ ] Add rate limiting (@fastify/rate-limit)
 - [ ] Add WebSocket support (@fastify/websocket)
 - [ ] Add database seeders
-
 

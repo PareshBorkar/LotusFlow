@@ -1,7 +1,7 @@
 import { projects, tasks } from "../data/mockData.js";
 
 export default async function projectRoutes(app) {
-  app.get("/api/projects", async (req, reply) => {
+  app.get("/projects", async (req, reply) => {
     const { workspaceId, search, status } = req.query;
 
     const items = projects.filter((project) => {
@@ -23,7 +23,7 @@ export default async function projectRoutes(app) {
     });
   });
 
-  app.post("/api/projects", async (req, reply) => {
+  app.post("/projects", async (req, reply) => {
     const { name, description, workspaceId, status } = req.body;
 
     if (!name || !workspaceId) {
@@ -46,7 +46,7 @@ export default async function projectRoutes(app) {
     reply.code(201).send(project);
   });
 
-  app.get("/api/projects/:projectId", async (req, reply) => {
+  app.get("/projects/:projectId", async (req, reply) => {
     const project = projects.find((p) => p.id === req.params.projectId);
 
     if (!project) {
@@ -61,7 +61,7 @@ export default async function projectRoutes(app) {
     });
   });
 
-  app.get("/api/projects/:projectId/tasks", async (req, reply) => {
+  app.get("/projects/:projectId/tasks", async (req, reply) => {
     const project = projects.find((p) => p.id === req.params.projectId);
 
     if (!project) {
