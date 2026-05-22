@@ -3,6 +3,7 @@
 node_modules
 
 build
+dist
 figma.png
 Project_Requirements.txt
 .prettierrc

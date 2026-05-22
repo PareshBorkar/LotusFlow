@@ -1,4 +1,5 @@
 import Fastify from 'fastify';
+import type { FastifyPluginAsync } from 'fastify';
 import fastifyCors from '@fastify/cors';
 import { fileURLToPath } from 'url';
 import authRoutes from './routes/auth.js';
@@ -8,7 +9,7 @@ import taskRoutes from './routes/tasks.js';
 import dashboardRoutes from './routes/dashboard.js';
 import { API_BASE_PREFIX, API_VERSION, API_VERSION_PREFIX } from './config/apiVersion.js';
 
-const apiRoutes = [
+const apiRoutes: FastifyPluginAsync[] = [
   authRoutes,
   workspaceRoutes,
   projectRoutes,
@@ -60,7 +61,7 @@ export async function createApp() {
 
   // Error handler
   app.setErrorHandler((err, req, reply) => {
-    reply.code(err.status || err.statusCode || 500).send({
+    reply.code(err.statusCode || 500).send({
       message: err.message || 'Internal server error.',
     });
   });

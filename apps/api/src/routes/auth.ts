@@ -1,7 +1,17 @@
+import type { FastifyInstance } from "fastify";
 import { workspaces } from "../data/mockData.js";
 
-export default async function authRoutes(app) {
-  app.post("/auth/login", async (req, reply) => {
+type LoginBody = {
+  email?: string;
+  password?: string;
+};
+
+type SignupBody = LoginBody & {
+  name?: string;
+};
+
+export default async function authRoutes(app: FastifyInstance) {
+  app.post<{ Body: LoginBody }>("/auth/login", async (req, reply) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -27,7 +37,7 @@ export default async function authRoutes(app) {
     });
   });
 
-  app.post("/auth/signup", async (req, reply) => {
+  app.post<{ Body: SignupBody }>("/auth/signup", async (req, reply) => {
     const { email, password, name } = req.body;
 
     if (!email || !password || !name) {

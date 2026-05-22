@@ -5,7 +5,7 @@ Comprehensive test suite for LotusFlow API with 50+ test cases covering all endp
 
 ## Test Structure
 
-### 1. Authentication Tests (`auth.test.js`)
+### 1. Authentication Tests (`auth.test.ts`)
 **Coverage:** Login and signup endpoints
 
 | Test | Purpose |
@@ -26,7 +26,7 @@ Comprehensive test suite for LotusFlow API with 50+ test cases covering all endp
 
 ---
 
-### 2. Workspace Tests (`workspaces.test.js`)
+### 2. Workspace Tests (`workspaces.test.ts`)
 **Coverage:** Workspace CRUD operations
 
 | Test | Purpose |
@@ -47,7 +47,7 @@ Comprehensive test suite for LotusFlow API with 50+ test cases covering all endp
 
 ---
 
-### 3. Project Tests (`projects.test.js`)
+### 3. Project Tests (`projects.test.ts`)
 **Coverage:** Project listing, creation, and filtering
 
 | Test | Purpose |
@@ -73,7 +73,7 @@ Comprehensive test suite for LotusFlow API with 50+ test cases covering all endp
 
 ---
 
-### 4. Task Tests (`tasks.test.js`)
+### 4. Task Tests (`tasks.test.ts`)
 **Coverage:** Task CRUD operations with comprehensive filtering
 
 | Test | Purpose |
@@ -105,7 +105,7 @@ Comprehensive test suite for LotusFlow API with 50+ test cases covering all endp
 
 ---
 
-### 5. Dashboard Tests (`dashboard.test.js`)
+### 5. Dashboard Tests (`dashboard.test.ts`)
 **Coverage:** Dashboard aggregation endpoints
 
 | Test | Purpose |
@@ -125,7 +125,7 @@ Comprehensive test suite for LotusFlow API with 50+ test cases covering all endp
 
 ---
 
-### 6. General Tests (`general.test.js`)
+### 6. General Tests (`general.test.ts`)
 **Coverage:** Health checks, error handling, and middleware
 
 | Test | Purpose |
@@ -162,7 +162,7 @@ npm run test:watch
 
 ### Specific Test File
 ```bash
-npm test auth.test.js
+npm test auth.test.ts
 ```
 
 ### With Coverage

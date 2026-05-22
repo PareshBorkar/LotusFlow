@@ -1,6 +1,7 @@
+import type { FastifyInstance } from "fastify";
 import { workspaces, projects, tasks } from "../data/mockData.js";
 
-export default async function dashboardRoutes(app) {
+export default async function dashboardRoutes(app: FastifyInstance) {
   app.get("/dashboard", async (req, reply) => {
     const summary = {
       totalWorkspaces: workspaces.length,

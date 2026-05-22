@@ -1,4 +1,33 @@
-export const workspaces = [
+export type Workspace = {
+  id: string;
+  name: string;
+  plan: string;
+  role: string;
+  membersCount: number;
+};
+
+export type Project = {
+  id: string;
+  workspaceId: string;
+  name: string;
+  description: string;
+  status: string;
+  membersCount: number;
+  tasksCount: number;
+};
+
+export type Task = {
+  id: string;
+  projectId: string;
+  title: string;
+  description?: string;
+  status: string;
+  priority: string;
+  assignee: string;
+  comments: number;
+};
+
+export const workspaces: Workspace[] = [
   {
     id: "ws_1",
     name: "Acme Product Studio",
@@ -22,7 +51,7 @@ export const workspaces = [
   },
 ];
 
-export const projects = [
+export const projects: Project[] = [
   {
     id: "proj_1",
     workspaceId: "ws_1",
@@ -52,7 +81,7 @@ export const projects = [
   },
 ];
 
-export const tasks = [
+export const tasks: Task[] = [
   {
     id: "task_1",
     projectId: "proj_1",

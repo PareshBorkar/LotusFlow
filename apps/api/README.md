@@ -18,6 +18,10 @@ The API will start on `http://localhost:4000`
 
 ### Production
 ```bash
+npm run build
+```
+
+```bash
 npm start
 ```
 
@@ -82,24 +86,24 @@ available as compatibility aliases while clients migrate.
 
 ```
 src/
-├── server.js           # Fastify app setup
+├── server.ts           # Fastify app setup
 ├── routes/             # API route handlers
-│   ├── auth.js
-│   ├── workspaces.js
-│   ├── projects.js
-│   ├── tasks.js
-│   └── dashboard.js
+│   ├── auth.ts
+│   ├── workspaces.ts
+│   ├── projects.ts
+│   ├── tasks.ts
+│   └── dashboard.ts
 ├── __tests__/          # Test files
-│   ├── auth.test.js
-│   ├── workspaces.test.js
-│   ├── projects.test.js
-│   ├── tasks.test.js
-│   ├── dashboard.test.js
-│   └── general.test.js
+│   ├── auth.test.ts
+│   ├── workspaces.test.ts
+│   ├── projects.test.ts
+│   ├── tasks.test.ts
+│   ├── dashboard.test.ts
+│   └── general.test.ts
 ├── data/
-│   └── mockData.js     # Mock data for development
+│   └── mockData.ts     # Mock data and domain types for development
 └── utils/
-    └── http.js         # Legacy utilities
+    └── http.ts         # Legacy utilities
 ```
 
 ## Features
@@ -113,6 +117,7 @@ src/
 - ✅ Mock data for testing
 - ✅ Comprehensive test suite (60+ tests)
 - ✅ Native inject() testing (no supertest needed)
+- ✅ TypeScript source with strict API build
 
 ## Fastify Benefits
 
@@ -132,4 +137,3 @@ src/
 - [ ] Add rate limiting (@fastify/rate-limit)
 - [ ] Add WebSocket support (@fastify/websocket)
 - [ ] Add database seeders
-

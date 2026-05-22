@@ -1,7 +1,25 @@
+import type { FastifyInstance } from "fastify";
 import { projects, tasks } from "../data/mockData.js";
 
-export default async function projectRoutes(app) {
-  app.get("/projects", async (req, reply) => {
+type ProjectQuery = {
+  workspaceId?: string;
+  search?: string;
+  status?: string;
+};
+
+type CreateProjectBody = {
+  name?: string;
+  description?: string;
+  workspaceId?: string;
+  status?: string;
+};
+
+type ProjectParams = {
+  projectId: string;
+};
+
+export default async function projectRoutes(app: FastifyInstance) {
+  app.get<{ Querystring: ProjectQuery }>("/projects", async (req, reply) => {
     const { workspaceId, search, status } = req.query;
 
     const items = projects.filter((project) => {
@@ -23,7 +41,7 @@ export default async function projectRoutes(app) {
     });
   });
 
-  app.post("/projects", async (req, reply) => {
+  app.post<{ Body: CreateProjectBody }>("/projects", async (req, reply) => {
     const { name, description, workspaceId, status } = req.body;
 
     if (!name || !workspaceId) {
@@ -46,7 +64,7 @@ export default async function projectRoutes(app) {
     reply.code(201).send(project);
   });
 
-  app.get("/projects/:projectId", async (req, reply) => {
+  app.get<{ Params: ProjectParams }>("/projects/:projectId", async (req, reply) => {
     const project = projects.find((p) => p.id === req.params.projectId);
 
     if (!project) {
@@ -61,7 +79,7 @@ export default async function projectRoutes(app) {
     });
   });
 
-  app.get("/projects/:projectId/tasks", async (req, reply) => {
+  app.get<{ Params: ProjectParams }>("/projects/:projectId/tasks", async (req, reply) => {
     const project = projects.find((p) => p.id === req.params.projectId);
 
     if (!project) {
