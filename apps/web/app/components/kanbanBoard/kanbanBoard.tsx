@@ -9,6 +9,7 @@ import TaskCard from './taskCard';
 import TaskModal from './taskModal';
 
 import { initialColumns } from '~/api/mockData';
+import { getBreadcrumb } from '../../routes-config/breadcrumbs';
 
 const boardColumns = [
   { title: 'TO DO', status: 'todo' },
@@ -75,8 +76,8 @@ export function KanbanBoard() {
         {/* Header */}
         <div className='mb-6 flex items-center justify-between'>
           <div>
-            <p className='text-sm text-slate-400'>Projects / Nova Platform</p>
-            <h1 className='mt-1 text-3xl font-bold text-slate-800'>Board</h1>
+            <p className='text-sm text-slate-400'>Nova/Projects</p>
+            <h1 className='mt-1 text-3xl font-bold text-slate-800'>{getBreadcrumb('/')?.title}</h1>
           </div>
           <button
             onClick={open}
