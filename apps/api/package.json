@@ -5,7 +5,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "node --env-file=.env --import tsx --watch src/server.ts",
-    "start": "node --env-file=.env dist/server.js",
+    "start": "node dist/server.js",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
     "typecheck": "tsc --noEmit"
